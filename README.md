@@ -57,3 +57,18 @@ and LL0) become the 'headlights' at the front.
 	left R10 pad (i.e. away from the BOOT switch, 3V3), to the top right
 	pin of the BOOT switch (nearest to the USB connector). See rework_01.jpg
 
+## Known flaws of 1.00
+
+ *  The connector are 2mm rather than 2.54mm spaced; so standard motors cannot use their (too long) cables and connectors. They have to be soldered in or to be given a new connector. The pitch is a bit fine for a beginner. The PCB needs to be made about 5mm bigger in every direction to accomdate this.
+
+ * The hole in the middle is a bit small for the `thick' sharpie pent.
+
+ * The batterynest mounting holes need a rethink; with short bolts they obscure the hole of the pen -and- the nuts are a bit fiddly `under' the motor.
+
+ * The motor voltage is not well labeled (top missing)
+
+ * The solder jumper for boot/0.6 is not as nice as the one for the motor; a smaller one should be selected.
+
+ * The battery connector should be one size bigger (it is now more the size common on LiPo -- as oppposed to 3 AA or 3 AAA nests).
+
+
