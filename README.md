@@ -1,3 +1,5 @@
+![image of a cheapbot](img/board-v100.jpg)
+
 A shonkbot for less than the price of a decent pint of Bristol Beer
 
  * Original -- http://jarkman.co.uk/catalog/robots/shonkbot.htm
@@ -44,18 +46,23 @@ and LL0) become the 'headlights' at the front.
 
 ## Rework #0 
 
-	The slot for the USB connector was not cut out properly. As a result the
-	USB connector is at a 45 degree angle. Secure it by soldering a U shapped
-	piece of stuff wire over it - thus fixing it in position. And then put some
-	extra solder on the rear 2 tabs. See image rework_00.jpg
+The slot for the USB connector was not cut out properly. As a result the
+USB connector is at a 45 degree angle. Secure it by soldering a U shapped
+piece of stuff wire over it - thus fixing it in position. And then put some
+extra solder on the rear 2 tabs. 
+
+!![rework 0, bridge over the USB connector]img/rework_00.jpg
 
 ## Rework # 1 
 
-	The BOOT switch should have been wired to 3V3; it was wired by accident
-	to GND. Remove R10 and cut the trace at the back of the board that runs
-	to the pin-header below R10. Then place a bodge wire from the
-	left R10 pad (i.e. away from the BOOT switch, 3V3), to the top right
-	pin of the BOOT switch (nearest to the USB connector). See rework_01.jpg
+The BOOT switch should have been wired to 3V3; it was wired by accident
+to GND. Remove R10 and cut the trace at the back of the board that runs
+to the pin-header below R10. Then place a bodge wire from the
+left R10 pad (i.e. away from the BOOT switch, 3V3), to the top right
+pin of the BOOT switch (nearest to the USB connector). 
+	
+![rework 01 - remove R10, add bodge wire on top side of board](img/rework_01_top.jpg)
+![rework 01 - cut trace bottom board](img/rework_01_bottom.jpg)
 
 ## Known flaws of 1.00
 
@@ -69,6 +76,6 @@ and LL0) become the 'headlights' at the front.
 
  * The solder jumper for boot/0.6 is not as nice as the one for the motor; a smaller one should be selected.
 
- * The battery connector should be one size bigger (it is now more the size common on LiPo -- as oppposed to 3 AA or 3 AAA nests).
+ * The battery connector should be one size bigger (it is now more the size common on LiPo -- as opposed to 3 AA or 3 AAA nests).
 
 
