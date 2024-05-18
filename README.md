@@ -55,6 +55,10 @@ extra solder on the rear 2 tabs.
 
 ## Rework # 1 
 
+This rework is not essential; provided your very first download is done
+from the Arduino IDE environment; so that it has the '1200 baud' trick
+to get the device into boot-state.
+
 The BOOT switch should have been wired to 3V3; it was wired by accident
 to GND. Remove R10 and cut the trace at the back of the board that runs
 to the pin-header below R10. Then place a bodge wire from the
