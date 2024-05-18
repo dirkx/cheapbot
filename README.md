@@ -51,7 +51,7 @@ USB connector is at a 45 degree angle. Secure it by soldering a U shapped
 piece of stuff wire over it - thus fixing it in position. And then put some
 extra solder on the rear 2 tabs. 
 
-!![rework 0, bridge over the USB connector]img/rework_00.jpg
+![rework 0, bridge over the USB connector](img/rework_00.jpg)
 
 ## Rework # 1 
 
