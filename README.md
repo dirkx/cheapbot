@@ -36,7 +36,22 @@ and if needed - apply https://github.com/DeqingSun/ch55xduino/pull/163 by: ....
 02_buttons	- solder in buzzer (if you do it earlier - you get an annoying bzz) - button presses should now work.
 		  solder jumper P0.6 needs to be in place.
 
-# Gotcha's
+# Flashing
+
+So the CH558 is shipped from the factory with a USB bootloader. When you connect it
+it should show up as 4348:55e0 (WinChipHead) on your USB bus. This signals that it
+is in bootloader mode and can be flashed.
+
+Once you have flashed it (once) from the Arduino environment - it will show up as
+1209:c550 as a normal serial port. And you can see your serial println statements
+here. If you set it to 1200 baud (done by selecting the right USB serial device
+in the Arduino IDE) then the bootloader interprets this as a requet to go back
+into boot mode. It will leave the bus; and rejoin as 4348:55e0.
+
+If it initially shows as 1209:c550 (Generic, or Arduino) or something else,  then it has 
+already been flashed. In that case it needs to be brought in BOOT mode. Depending on how 
+the previous flashing went - this is either by pulling DP5.1 to the 3v3 rail; or by 
+connecting P4.6 to ground during powerup.
 
 ## How to see it is ready to be flashed
 
