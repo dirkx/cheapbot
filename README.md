@@ -36,6 +36,35 @@ and if needed - apply https://github.com/DeqingSun/ch55xduino/pull/163 by: ....
 02_buttons	- solder in buzzer (if you do it earlier - you get an annoying bzz) - button presses should now work.
 		  solder jumper P0.6 needs to be in place.
 
+# Gotcha's
+
+## How to see it is ready to be flashed
+
+When the CPU is halted & ready to be flashed; all LEDs are on; the motors
+are blocked and the buzzer is buzzing (owing to all GPIO's to be high). 
+
+## It wont flash
+
+If this is your every first time flashing; do rework #1, press the boot button
+and power up the board while holding it pressed. It now should stay in boot
+mode for a few seconds. As an alternative for rework #1 - you can also touch
+the leftmost pad (nearest to the buzzer) of the bootselect solder-pad on the 
+back with a wire to 3v3 while powering it up. There is a 3v3 on the serial
+connector.
+
+## It still wont flash
+
+First - check that the solderpad on the back is to 'boot'.
+
+Secondly - check in the Arduino IDE that you selected "Bootloader Pin": "PD5.1 (USB DP to 3V2)"
+and not to P4.6. As that will break the Arduino Flashing `1200 baud serial' trick.
+
+## Darn - I did select 4.6 by accident.
+
+You will need to pul PP4.6 down during powerup to GND. An easy way to do this is to
+touch the leftmost pin (furthest away from Led LR2 and the board edge) of R106. There
+is a convenient ground pad in the middle top of the board - between button 1 and 2.
+
 # Board Version 1.00
 
 The side with the CPU (big square chi) is the top side.
@@ -82,4 +111,5 @@ pin of the BOOT switch (nearest to the USB connector).
 
  * The battery connector should be one size bigger (it is now more the size common on LiPo -- as opposed to 3 AA or 3 AAA nests).
 
+ * Easier D4.6 pad near GND for alternative boot.
 
