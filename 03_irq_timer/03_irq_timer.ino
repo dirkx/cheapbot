@@ -1,36 +1,39 @@
-// #include <Serial.h>
+#include <Serial.h>
+#define LED (40)
 
-void Timer3Interrupt(void) __interrupt {
-  T3_CTRL &= ~bT3_CNT_EN;
+static unsigned int flag = 0;
+void Timer3Interrupt(void) __interrupt(INT_NO_TMR3) __using(1) {
+  // T3_CTRL &= ~bT3_CNT_EN;  // stop timer
 
-  digitalWrite(40, LOW);
+  flag++;
+  digitalWrite(LED, flag & 1);
 
   // clear count-passed endpoint interupt.
-  if (T3_STAT & bT3_IF_END)
-    T3_STAT |= bT3_IF_END;
-
-  T3_CTRL |= bT3_CNT_EN;  // re-start timer
+  T3_STAT |= bT3_IF_END;
+  
+  // T3_CTRL |= bT3_CNT_EN;  // re-start timer
 }
 
 void setup() {
-  for (int i = 0; i < 8; i++) {
-    digitalWrite(40 + i, LOW);
-    pinMode(40 + i, OUTPUT);
-  }
-  digitalWrite(40, HIGH);
+  for (int i = 40; i < 48; i++) {
+    digitalWrite(i, LOW);
+    pinMode(i, OUTPUT);
+  };
+  for (int i = 30; i < 38; i++) {
+    digitalWrite(i, LOW);
+    pinMode(i, OUTPUT);
+  };
 
-#if 0
   // give the Arduino IDE some time to switch.
   delay(3000);
   USBSerial_println(__FILE__);
   USBSerial_println("Gotta get going...");
   USBSerial_println(__DATE__);
   USBSerial_println(__TIME__);
-#endif
 
-
-#define DIV (0x4000)      // Divisor of Fsys
-#define ENDCOUNT (0x4000)  // Count
+#define PERIOD (500)            /* milli seconds */
+#define DIV (F_CPU / 10 / 1000) /* 10 Khz left over */
+#define ENDCOUNT (10 * PERIOD)  /* count to 10k */
 
   // set divisor
   T3_SETUP |= bT3_EN_CK_SE;  //  Enable to accessing divisor setting register.
@@ -49,6 +52,8 @@ void setup() {
   T3_END_L = ENDCOUNT & 0xff;
   T3_END_H = (ENDCOUNT >> 8) & 0xff;
 
+  // *(void (*)(void)) INT_ADDR_TMR3 = &Timer3Interrupt();
+
   T3_CTRL |= bT3_CNT_EN;  // start timer
 
   IE_TMR3 = 1;  // Timer3 interrupt is enabled.
@@ -56,7 +61,6 @@ void setup() {
 }
 
 void loop() {
-#if 0
   {
     static uint32_t last;
     if (millis() - last > 2500) {
@@ -66,12 +70,11 @@ void loop() {
   }
   {
     static uint32_t last = 0;
-    if (last != millis_int) {
-      last = millis_int;
+    if (last != flag) {
+      last = flag;
       USBSerial_print("IRQ seen:");
-      USBSerial_println(millis_int);
-      delay(500);
+      USBSerial_println(flag);
+      delay(100);
     }
   }
-  #endif
 }
