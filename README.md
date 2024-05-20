@@ -132,10 +132,13 @@ pin of the BOOT switch (nearest to the USB connector).
 
 | Item | Source | Price |
 |------|--------|-------|
-| 3 AA batteris | local shop | 3.00 euro per 3 |
-| PCB including parts | JLCPCB | ~2.10 euro/piece at 25 units FOR |
+| 3 AA batteriess | some local shop | 3.00 euro per 3 |
+| PCB including parts and soldering| JLCPCB | ~2.10 euro/piece at 25 units FOR |
 | 2 28byj-48  Steppers | Aliexpres | 0.80-1.90 euro per pair, inc. shipping |
 | 3AA Battery nest | Amazon | 0.82 euro/piece inc. shipping |
-| Some stiff wire or tie-wraps ||
-| A pen ||
+| Some stiff wire or tie-wraps |||
+| A pen |||
+| Bit of tape to make the pen the right thickness |||
+| Some hotglue |||
+
 
