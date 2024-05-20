@@ -14,7 +14,7 @@ For 1.00 boards - apply rework #0 first.
 
 	https://github.com/DeqingSun/ch55xduino
 
-and if needed - apply https://github.com/DeqingSun/ch55xduino/pull/163 by: ....
+If needed (i.e if the CH558 does not show; only the CH559) - apply https://github.com/DeqingSun/ch55xduino/pull/163 by installing https://github.com/DeqingSun/ch55xduino via the package manager the normal way. Then copy across the file 'boarts.txt' (replacing the existing boards.txt file) and the directory 'variants/ch558' which is to be added to the variant directory.
 
 # First flashing 
 
@@ -112,6 +112,19 @@ pin of the BOOT switch (nearest to the USB connector).
 ![rework 01 - remove R10, add bodge wire on top side of board](img/rework_01_top.jpg)
 ![rework 01 - cut trace bottom board](img/rework_01_bottom.jpg)
 
+# Bill of materials
+
+| Item | Source | Price |
+|------|--------|-------|
+| 3 AA batteriess | some local shop | 3.00 euro per 3 |
+| PCB including parts and soldering| JLCPCB | 2.10 euro/piece at 25 units FOR |
+| 2 28byj-48  Steppers | Aliexpres | 0.80-1.90 euro per pair, inc. shipping |
+| 3AA Battery nest | Amazon | 0.82 euro/piece inc. shipping |
+| Some stiff wire or tie-wraps |||
+| A pen |||
+| Bit of tape to make the pen the right thickness |||
+| Some hotglue |||
+
 ## Known flaws of 1.00
 
  *  The connector are 2mm rather than 2.54mm spaced; so standard motors cannot use their (too long) cables and connectors. They have to be soldered in or to be given a new connector. The pitch is a bit fine for a beginner. The PCB needs to be made about 5mm bigger in every direction to accomdate this.
@@ -127,18 +140,4 @@ pin of the BOOT switch (nearest to the USB connector).
  * The battery connector should be one size bigger (it is now more the size common on LiPo -- as opposed to 3 AA or 3 AAA nests).
 
  * Easier D4.6 pad near GND for alternative boot.
-
-# Bill of materials
-
-| Item | Source | Price |
-|------|--------|-------|
-| 3 AA batteriess | some local shop | 3.00 euro per 3 |
-| PCB including parts and soldering| JLCPCB | ~2.10 euro/piece at 25 units FOR |
-| 2 28byj-48  Steppers | Aliexpres | 0.80-1.90 euro per pair, inc. shipping |
-| 3AA Battery nest | Amazon | 0.82 euro/piece inc. shipping |
-| Some stiff wire or tie-wraps |||
-| A pen |||
-| Bit of tape to make the pen the right thickness |||
-| Some hotglue |||
-
 
