@@ -27,23 +27,23 @@ void led_init() {
 
 // Motor - red is middel for H/V coils
 //
-#define MOTORLEFT0 (20) // blue
-#define MOTORLEFT1 (21) // pink
-#define MOTORLEFT2 (22) // yellow 
-#define MOTORLEFT3 (23) // orange
-#define MOTORLEFT4 (24) // TP 1 (on back of board)
-#define MOTORLEFT5 (25) // TP 2
-#define MOTORLEFT6 (26) // TP 3
+#define MOTORLEFT0 (20) // TP 1 (back of board)
+#define MOTORLEFT1 (21) // TP 2
+#define MOTORLEFT2 (22) // TP 3
+#define MOTORLEFT3 (23) // orange - coil 1 (V, rev)
+#define MOTORLEFT4 (24) // yellow - coil 3 (H, rev)
+#define MOTORLEFT5 (25) // pink - coil 2 (V, pos)
+#define MOTORLEFT6 (26) // blue - coil 4 (H, pos)
 
 // Motor - red is middel for H/V coils
 //
-#define MOTORRIGHT0 (30) // blue - coil 4 (H, pos)
-#define MOTORRIGHT1 (31) // pink - coil 2 (V, pos)
-#define MOTORRIGHT2 (32) // yellow - coil 3 (H, rev)
+#define MOTORRIGHT0 (30) // TP 6
+#define MOTORRIGHT1 (31) // TP 5
+#define MOTORRIGHT2 (32) // TP4 
 #define MOTORRIGHT3 (33) // orange - coil 1 (V, rev)
-#define MOTORRIGHT4 (34) // TP 4
-#define MOTORRIGHT5 (35) // TP 5
-#define MOTORRIGHT6 (36) // TP 6
+#define MOTORRIGHT4 (34) // yellow - coil 3 (H, rev)
+#define MOTORRIGHT5 (35) // pink - coil 2 (V, pos)
+#define MOTORRIGHT6 (36) // 
 
 const unsigned int stepsPerRevolution = 2038;
 
@@ -53,14 +53,8 @@ const uint8_t MOTOR_LEFT = 0;
 const uint8_t MOTOR_RIGHT = 1;
 
 const uint8_t MOTOR_GPIO[2][4] = {
-  //  {MOTORLEFT3, MOTORLEFT1, MOTORLEFT2, MOTORLEFT0},
-  //  {MOTORRIGHT3, MOTORRIGHT1, MOTORRIGHT2, MOTORRIGHT0}
-  //  {MOTORLEFT0, MOTORLEFT1, MOTORLEFT2, MOTORLEFT3},
-  //  {MOTORRIGHT1, MOTORRIGHT3, MOTORRIGHT0, MOTORRIGHT2}
-  //  {MOTORLEFT3, MOTORLEFT2, MOTORLEFT1, MOTORLEFT0},
-  //  {MOTORRIGHT0, MOTORRIGHT1, MOTORRIGHT2, MOTORRIGHT3}
-  {MOTORLEFT0, MOTORLEFT3, MOTORLEFT1, MOTORLEFT2},
-  {MOTORRIGHT2, MOTORRIGHT3, MOTORRIGHT1, MOTORRIGHT0}
+  {MOTORLEFT3, MOTORLEFT4, MOTORLEFT5, MOTORLEFT6},
+  {MOTORRIGHT3, MOTORRIGHT4, MOTORRIGHT5, MOTORRIGHT6}
 };
 
 const uint8_t STEP_PATTERN[] = {0b0001, 0b011, 0b0010, 0b0110, 0b0100, 0b1100, 0b1000, 0b1001};
@@ -88,6 +82,9 @@ void motor_step(uint8_t motor, int dir) {
 }
 
 void motor_init() {
+  for(int i = 0; i < 50; i++) 
+      digitalWrite(i, LOW);
+
   digitalWrite(led_right[0], HIGH);
 
 #if 0
@@ -153,6 +150,6 @@ void loop() {
   digitalWrite(led_left[0] , !digitalRead(led_left[0]));
 
   motor_step(MOTOR_LEFT, 1);
-  motor_step(MOTOR_RIGHT, -1);
-  delay(20);
+  motor_step(MOTOR_RIGHT, 1);
+  delay(5);
 }
