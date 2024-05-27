@@ -6,6 +6,13 @@ const uint16_t tocksPerSecond = 3000;        // 5kHz stepping speed (max, just a
 const uint16_t accAdjustTock = 50;
 const uint16_t speedInc = speedAcc * accAdjustPerSecond / tocksPerSecond;
 
+// https://www.instructables.com/BYJ48-Stepper-Motor/
+////   step 0 1 2 3 4 5 6 7 
+// red.     - - - - - - - -  common
+// orange   x x           x 
+// yellow     x x x
+// pink           x x x 
+// blue               x x x
 const uint8_t STEP_PATTERN[] = { 0b0001, 0b011, 0b0010, 0b0110, 0b0100, 0b1100, 0b1000, 0b1001 };
 const uint8_t STOP_PATTERN = 0xb000;
 
