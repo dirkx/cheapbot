@@ -51,7 +51,7 @@ in that bundle of files. Then go to the directory:
 And apply the patch with 
 
 	cd ~/Library/Arduino15/packages/CH55xDuino/hardware/mcs51/0.0.21
-	patch -p1 --dry-run < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
+	patch -p0 --dry-run < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
 
 It should show you
 
@@ -61,7 +61,7 @@ It should show you
 
 with no errors. If so - apply it again, but now for real:
 
-	patch -p1 < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
+	patch -p0 < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
 
 Then restart your arduino IDE. And you now should see a CH558 board:
 
