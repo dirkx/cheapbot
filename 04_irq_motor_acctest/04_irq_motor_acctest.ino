@@ -139,6 +139,7 @@ void loop() {
     digitalWrite(41, HIGH);
     USBSerial_println("FWD 500");
 
-    moveMm(&left, 500);
+    moveMm(&left, -2000);
+    moveMm(&right, 2000);
   };
 }
