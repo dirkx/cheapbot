@@ -20,19 +20,19 @@ This is done by adding the URL
 
 In the settings packages list:
 
-![image of a settings screen](arduino-add-url.png)
+![image of a settings screen](img/arduino-add-url.png)
 
 Once you have done this - go to Tools and then tbe Boards, Board manager menu:
 
-![image of a board manager](arduino-add-board.png)
+![image of a board manager](img/arduino-add-board.png)
 
 And search for the CH55x. Then install it:
 
-![image of a board instlal](arduino-install-board.png).
+![image of a board instlal](img/arduino-install-board.png).
 
 Now search for the CH558 the 'select board' menu. If it does not appear (as shown below):
 
-![image of a ch558 not yet known](arduino-select-board-nope.png).
+![image of a ch558 not yet known](img/arduino-select-board-nope.png).
 
 Then sadly the pull request https://github.com/DeqingSun/ch55xduino/pull/163 has not been installed. **ONLY** in this case do a manual install by
 
@@ -65,7 +65,7 @@ with no errors. If so - apply it again, but now for real:
 
 Then restart your arduino IDE. And you now should see a CH558 board:
 
-![image of a ch558 not yet known](arduino-select-board-ok.png).
+![image of a ch558 not yet known](img/arduino-select-board-ok.png).
 
 # First flashing 
 
