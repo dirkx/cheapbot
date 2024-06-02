@@ -115,6 +115,19 @@ are blocked and the buzzer is buzzing (owing to all GPIO's to be high).
 
 ## It wont flash
 
+First check if you can get it into flash mode via the 1200 baud trick. This
+requires your device to show up in the list of serial USB devices.
+
+Use any serial tool (e.g. SerialTools); and do unplug the robot; check
+the pulldown tool with the available serial ports (or screenshot it), Then
+connect the robot and check again. If there is an extra port - that is
+the robot. In that case - set the baudrate first to 1200; and then do
+'connect' from your serial console. The device should disappear as
+a serial device; and all LEDs on the robot come on. You are now in 
+flashing mode - try again from your Arduino IDE to flash.
+
+## Nope - won't flash
+
 If this is your every first time flashing; do rework #1, press the boot button
 and power up the board while holding it pressed. It now should stay in boot
 mode for a few seconds. As an alternative for rework #1 - you can also touch
@@ -129,7 +142,7 @@ First - check that the solderpad on the back is to 'boot'.
 Secondly - check in the Arduino IDE that you selected "Bootloader Pin": "PD5.1 (USB DP to 3V2)"
 and not to P4.6. As that will break the Arduino Flashing `1200 baud serial' trick.
 
-## Darn - I did select 4.6 by accident.
+## Darn - I did select 4.6 by accident (and 1200 baud does not work)
 
 You will need to pul PP4.6 down during powerup to GND. An easy way to do this is to
 touch the leftmost pin (furthest away from Led LR2 and the board edge) of R106. There
