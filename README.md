@@ -14,7 +14,58 @@ For 1.00 boards - apply rework #0 first.
 
 	https://github.com/DeqingSun/ch55xduino
 
-If needed (i.e if the CH558 does not show; only the CH559) - apply https://github.com/DeqingSun/ch55xduino/pull/163 by installing https://github.com/DeqingSun/ch55xduino via the package manager the normal way. Then copy across the file 'boarts.txt' (replacing the existing boards.txt file) and the directory 'variants/ch558' which is to be added to the variant directory.
+This is done by adding the URL
+
+	https://raw.githubusercontent.com/DeqingSun/ch55xduino/ch55xduino/package_ch55xduino_mcs51_index.json
+
+In the settings packages list:
+
+![image of a settings screen](arduino-add-url.png)
+
+Once you have done this - go to Tools and then tbe Boards, Board manager menu:
+
+![image of a board manager](arduino-add-board.png)
+
+And search for the CH55x. Then install it:
+
+![image of a board instlal](arduino-install-board.png).
+
+Now search for the CH558 the 'select board' menu. If it does not appear (as shown below):
+
+![image of a ch558 not yet known](arduino-select-board-nope.png).
+
+Then sadly the pull request https://github.com/DeqingSun/ch55xduino/pull/163 has not been installed. **ONLY** in this case do a manual install by
+
+First checking out the cheapbot code to some location:
+
+	git clone https://github.com/dirkx/cheapbot.git
+
+And locate the file
+
+	cheapbot/tools/arduino-ide-2.3.2-0.0.21.patch
+
+in that bundle of files. Then go to the directory:
+
+     cd ~/Library/Arduino15/packages/CH55xDuino/hardware/mcs51/0.0.21
+
+And apply the patch with 
+
+	cd ~/Library/Arduino15/packages/CH55xDuino/hardware/mcs51/0.0.21
+	patch -p1 --dry-run < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
+
+It should show you
+
+     patching file boards.txt
+     patching file 'cores/ch55xduino/Arduino.h'
+     ...
+
+with no errors. If so - apply it again, but now for real:
+
+	patch -p1 < LOCATION_OF_ABOVE_GIT_CLONE/cheapbot/tools/ide-2.3.2-0.0.21.patch
+
+Then restart your arduino IDE. And you now should see a CH558 board:
+
+![image of a ch558 not yet known](arduino-select-board-ok.png).
 
 # First flashing 
 
@@ -26,6 +77,10 @@ If needed (i.e if the CH558 does not show; only the CH559) - apply https://githu
 	The standard arduino firmware will put the device in boot mode if the serial
 	is set to 1200 baud shortly. So Rework #1 is not needed if your first flashing
 	succeeds -and- is with an Arduino build payload.
+
+# Manaully force into firmware boot without rework #1
+
+Start a serial tool (e.g. SerialTools), set the baudrate to 1200 and hit the connect button. All LEDs should now come on -and serial tools should no longer see the serial device (until you flash or powercycle).
 
 # Initial bringup #
 

@@ -1,0 +1,664 @@
+diff -u -r ./boards.txt ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/boards.txt
+--- ./boards.txt	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/boards.txt	2024-05-17 22:57:31
+@@ -261,4 +261,66 @@
+ 
+ ch549.upload.speed=1
+ 
+-##############################################################
+\ No newline at end of file
++##############################################################
++
++ch558.name=CH558 Board
++ch558.upload.tool=vnproch55x_usb
++ch558.upload.protocol=ch55x2_3_1
++#CH558 has 40K flash (48k)
++ch558.upload.maximum_size=40960
++ch558.build.mcu=mcs51
++ch558.menu.clock.24internal=24 MHz (internal)
++ch558.menu.clock.24internal.build.f_cpu=24000000L
++ch558.menu.clock.24internal.build.f_oscillator_external=0L
++ch558.menu.clock.16internal=16 MHz (internal)
++ch558.menu.clock.16internal.build.f_cpu=16000000L
++ch558.menu.clock.16internal.build.f_oscillator_external=0L
++ch558.menu.clock.56internal=56 MHz (internal)
++ch558.menu.clock.56internal.build.f_cpu=56000000L
++ch558.menu.clock.56internal.build.f_oscillator_external=0L
++ch558.menu.clock.24external=24 MHz (external 12M osc)
++ch558.menu.clock.24external.build.f_cpu=24000000L
++ch558.menu.clock.24external.build.f_oscillator_external=12000000L
++ch558.menu.clock.16external=16 MHz (external 12M osc)
++ch558.menu.clock.16external.build.f_cpu=16000000L
++ch558.menu.clock.16external.build.f_oscillator_external=12000000L
++ch558.menu.clock.56external=56 MHz (external 12M osc)
++ch558.menu.clock.56external.build.f_cpu=56000000L
++ch558.menu.clock.56external.build.f_oscillator_external=12000000L
++ch558.build.board=ch558
++ch558.build.core=ch55xduino
++ch558.build.variant=ch558
++ch558.build.mcu=CH558
++
++ch558.upload.use_1200bps_touch=true
++ch558.upload.wait_for_upload_port=false
++
++## USB Memory Settings
++## ----------------------------------------------
++ch558.menu.usb_settings.usbcdc=Default CDC
++ch558.menu.usb_settings.usbcdc.upload.maximum_data_size=3948
++ch558.menu.usb_settings.usbcdc.upload.xdata_location=148
++ch558.menu.usb_settings.usbcdc.build.extra_flags=-DEP0_ADDR=0 -DEP1_ADDR=10 -DEP2_ADDR=20
++## ----
++ch558.menu.usb_settings.user148=USER CODE w/ 148B USB ram
++ch558.menu.usb_settings.user148.upload.maximum_data_size=3948
++ch558.menu.usb_settings.user148.upload.xdata_location=148
++ch558.menu.usb_settings.user148.build.extra_flags=-DUSER_USB_RAM=148
++## ----
++ch558.menu.usb_settings.user0=USER CODE w/ 0B USB ram
++ch558.menu.usb_settings.user0.upload.maximum_data_size=4096
++ch558.menu.usb_settings.user0.upload.xdata_location=0
++ch558.menu.usb_settings.user0.build.extra_flags=-DUSER_USB_RAM=0
++
++## ----------------------------------------------
++ch558.menu.bootloader_pin.p46=P4.6 pull-down
++ch558.menu.bootloader_pin.p46.upload.bootcfg=3
++## ----
++ch558.menu.bootloader_pin.p51=P5.1 (D+) pull-up
++ch558.menu.bootloader_pin.p51.upload.bootcfg=1
++
++# meaningless variables just to keep the makefile happy
++
++ch558.upload.speed=1
++
++##############################################################
+Only in ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores: .DS_Store
+diff -u -r ./cores/ch55xduino/Arduino.h ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/Arduino.h
+--- ./cores/ch55xduino/Arduino.h	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/Arduino.h	2024-05-17 22:29:31
+@@ -160,7 +160,7 @@
+  * @return HIGH or LOW (uint8_t).
+  */
+ uint8_t digitalRead(__data uint8_t pin);
+-#if defined(CH559)
++#if defined(CH559)  || defined(CH558)
+ uint16_t analogRead(__data uint8_t pin);
+ #else
+ /**
+diff -u -r ./cores/ch55xduino/HardwareSerial1.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/HardwareSerial1.c
+--- ./cores/ch55xduino/HardwareSerial1.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/HardwareSerial1.c	2024-05-17 22:29:31
+@@ -26,7 +26,7 @@
+ 
+   IE_UART1 = 1;
+   EA = 1; // Enable serial 1 interrupt
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+   __data uint32_t x;
+   __data uint8_t x2;
+   SER1_LCR |= bLCR_DLAB; // change baudrate
+@@ -65,7 +65,7 @@
+     uart1_flag_sending = 1;
+ #if defined(CH551) || defined(CH552)
+     SBUF1 = SendDat;
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+     SER1_THR = SendDat;
+ #elif defined(CH549)
+     SBUF1 = SendDat;
+diff -u -r ./cores/ch55xduino/HardwareSerial1ISR.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/HardwareSerial1ISR.c
+--- ./cores/ch55xduino/HardwareSerial1ISR.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/HardwareSerial1ISR.c	2024-05-17 22:29:31
+@@ -16,7 +16,7 @@
+   if (nextHead != uart1_rx_buffer_tail) {
+ #if defined(CH551) || defined(CH552)
+     Receive_Uart1_Buf[uart1_rx_buffer_head] = SBUF1;
+-#elif defined(CH559)
++#elif defined(CH559)  || defined(CH558)
+     Receive_Uart1_Buf[uart1_rx_buffer_head] = SER1_RBR;
+ #elif defined(CH549)
+     Receive_Uart1_Buf[uart1_rx_buffer_head] = SBUF1;
+@@ -33,7 +33,7 @@
+     } else {
+ #if defined(CH551) || defined(CH552)
+       SBUF1 = Transmit_Uart1_Buf[uart1_tx_buffer_tail];
+-#elif defined(CH559)
++#elif defined(CH559)  || defined(CH558)
+       SER1_THR = Transmit_Uart1_Buf[uart1_tx_buffer_tail];
+ #elif defined(CH549)
+       SBUF1 = Transmit_Uart1_Buf[uart1_tx_buffer_tail];
+diff -u -r ./cores/ch55xduino/USBCDC.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/USBCDC.c
+--- ./cores/ch55xduino/USBCDC.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/USBCDC.c	2024-05-17 22:29:31
+@@ -77,7 +77,7 @@
+ 
+     while (1)
+       ;
+-#elif defined(CH559) && (BOOT_LOAD_ADDR == 0xF400)
++#elif (defined(CH559)  | defined(CH558) )  && (BOOT_LOAD_ADDR == 0xF400)
+     USB_CTRL = 0;
+     EA = 0; // Disabling all interrupts is required.
+     delayMicroseconds(50000);
+diff -u -r ./cores/ch55xduino/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/USBhandler.c
+--- ./cores/ch55xduino/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/USBhandler.c	2024-05-17 22:29:31
+@@ -510,7 +510,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559)  || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -526,7 +526,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559)  || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./cores/ch55xduino/main.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/main.c
+--- ./cores/ch55xduino/main.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/main.c	2024-05-19 20:56:34
+@@ -24,6 +24,10 @@
+ void USBInterrupt(void);
+ // Timer2Interrupt NEEDs to saves the context
+ void Timer2Interrupt(void) __interrupt(INT_NO_TMR2);
++#if defined(CH559)  || defined(CH558)
++void Timer3Interrupt(void) __interrupt(INT_NO_TMR3);
++#endif
++
+ // GPIOInterrupt NEEDs to saves the context
+ void GPIOInterrupt(void) __interrupt(INT_NO_GPIO);
+ 
+@@ -63,7 +67,7 @@
+     uart1IntTxHandler();
+     U1TI = 0;
+   }
+-#elif defined(CH559)
++#elif defined(CH559)  || defined(CH558)
+   uint8_t interruptStatus = SER1_IIR & 0x0f;
+   switch (interruptStatus) {
+   case U1_INT_RECV_RDY:
+diff -u -r ./cores/ch55xduino/wiring.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring.c
+--- ./cores/ch55xduino/wiring.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring.c	2024-05-18 15:23:47
+@@ -1198,7 +1198,7 @@
+ #warning F_CPU invalid or not set
+ #endif
+ 
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+ #if F_CPU == 24000000
+   CLOCK_CFG =
+       CLOCK_CFG & ~MASK_SYS_CK_DIV | 12; // 24MHz, 12M*(24 default PLL)/12=24M
+@@ -1229,7 +1229,11 @@
+ 
+   // init PWM
+   PWM_CK_SE = 93; // DIV by 94 for 1K freq on 24M clk
++#if defined(CH558)
++  PWM3_CTRL = 0;
++#else
+   PWM_CTRL = 0;
++#endif
+ 
+   // init T0 for millis
+   TMOD = (TMOD & ~0x0F) | (bT0_M1); // mode 2 for autoreload
+diff -u -r ./cores/ch55xduino/wiring_analog.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring_analog.c
+--- ./cores/ch55xduino/wiring_analog.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring_analog.c	2024-05-18 15:22:15
+@@ -8,7 +8,7 @@
+ #include "pins_arduino_include.h"
+ // clang-format on
+ 
+-#if defined(CH559)
++#if defined(CH559)  || defined(CH558)
+ uint16_t analogRead(__data uint8_t pin)
+ #else
+ uint8_t analogRead(__data uint8_t pin)
+@@ -30,7 +30,7 @@
+     ;
+ 
+   return ADC_DATA;
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+ 
+   __data uint8_t pinMask = 1 << pin;
+   P1_IE &= ~(pinMask); // Close other data functions of P1 port, if only part of
+@@ -119,7 +119,7 @@
+       }
+     }
+   }
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+   pinMode(pin, OUTPUT);
+   if (val == 0) {
+     digitalWrite(pin, LOW);
+@@ -136,6 +136,7 @@
+       PWM_CYCLE = 255;
+     }
+     switch (pwmPin) {
++#if defined(CH559)
+     case PIN_PWM1:
+       PIN_FUNC &= ~(bPWM1_PIN_X); // CH559 only has 1 bit for 2 PWMs
+       PWM_CTRL |= bPWM_OUT_EN;
+@@ -146,13 +147,12 @@
+       PWM_CTRL |= bPWM2_OUT_EN;
+       PWM_DATA2 = val;
+       break;
++#endif
+     case PIN_PWM3:
+     case PIN_PWM3_:
+       if (pwmPin == PIN_PWM3) {
+         P1_DIR |= bPWM3; // push pull
+         P1_PU |= bPWM3;
+-        PIN_FUNC &= ~bTMR3_PIN_X;
+-      } else {
+         P4_DIR |= bPWM3_; // push pull
+         P4_PU |= bPWM3_;
+         PIN_FUNC |= bTMR3_PIN_X;
+@@ -170,6 +170,7 @@
+       T3_FIFO_H = 0;
+       T3_CTRL |= bT3_CNT_EN;
+       break;
++#if defined(CH559)
+     case PIN_PWM1_:
+       PIN_FUNC |= (bPWM1_PIN_X);
+       PWM_CTRL |= bPWM_OUT_EN;
+@@ -180,6 +181,7 @@
+       PWM_CTRL |= bPWM2_OUT_EN;
+       PWM_DATA2 = val;
+       break;
++#endif
+     case NOT_ON_PWM:
+     default:
+       if (val < 128) {
+diff -u -r ./cores/ch55xduino/wiring_digital.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring_digital.c
+--- ./cores/ch55xduino/wiring_digital.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/cores/ch55xduino/wiring_digital.c	2024-05-18 15:20:55
+@@ -43,7 +43,7 @@
+       P4_DIR_PU &= ~bit;
+     }
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+     if (port == P0PORT) {
+       PORT_CFG &= ~bP0_OC;
+       P0_PU &= ~bit;
+@@ -88,7 +88,7 @@
+       P4_DIR_PU |= bit;
+     }
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+     if (port == P0PORT) {
+       PORT_CFG &= ~bP0_OC;
+       P0_PU |= bit;
+@@ -133,7 +133,7 @@
+       P4_DIR_PU |= bit;
+     }
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+     if (port == P0PORT) {
+       PORT_CFG &= ~bP0_OC;
+       P0_DIR |= bit;
+@@ -172,8 +172,31 @@
+       P4_DIR_PU &= ~bit;
+     }
+ #endif
+-    // todo: OC mode for CH559
+-  }
++#if defined(CH559) || defined(CH558)
++    // open drain settings - see table 10.2.2 on page 28.
++    // Selected as "High-impedance input weak standard bi-directional mode with open drain output, pins without pull-up resistor."
++    // Ports P0-P3 support pure input, push-pull output and standard bi-direction modes, P4 supports pure input and push-pull output modes. 
++    if (port == P0PORT) {
++      PORT_CFG |= bP0_OC; // clear bP0_OC bit to get open drain and bi-dir modes.
++      P0_DIR &= ~bit;
++      P0_PU &= ~bit; 
++    } else if (port == P1PORT) {
++      PORT_CFG |= bP1_OC;
++      P1_DIR |= bit;
++      P1_PU &= ~bit; 
++    } else if (port == P2PORT) {
++      PORT_CFG |= bP2_OC;
++      P2_DIR |= bit;
++      P2_PU &= ~bit; 
++    } else if (port == P3PORT) {
++      PORT_CFG |= bP3_OC;
++      P3_DIR |= bit;
++      P3_PU &= ~bit; 
++    } else if (port == P4PORT) {
++      P4_DIR |= bit; // Open Drain not supported; fall back to normal output.
++    }
++#endif
++  } // End of Open Drain mode.
+ }
+ 
+ static void turnOffPWM(__data uint8_t pwm) {
+@@ -200,8 +223,9 @@
+     }
+     break;
+   }
+-#elif defined(CH559)
++#elif defined(CH559) | defined(CH558)
+   switch (pwm) {
++#if defined(CH559)  // CH558 only has one PWM(3)
+   case PIN_PWM1:
+     if ((PIN_FUNC & bPWM1_PIN_X) == 0) {
+       PWM_CTRL &= ~bPWM_OUT_EN;
+@@ -222,6 +246,7 @@
+       PWM_CTRL &= ~bPWM2_OUT_EN;
+     }
+     break;
++#endif
+   case PIN_PWM3:
+     if ((PIN_FUNC & bTMR3_PIN_X) == 0) {
+       if (T3_CTRL & bT3_OUT_EN) {
+@@ -241,7 +266,7 @@
+   pwm;
+   return;
+ #endif
+-  // todo: PWM mode for CH559
++  // todo: PWM mode for CH559 and CHA558
+ }
+ 
+ uint8_t digitalRead(__data uint8_t pin) {
+@@ -260,7 +285,7 @@
+   __data uint8_t portBuf = 0;
+ 
+   switch (port) {
+-#if defined(CH551) || defined(CH552) || defined(CH549) || defined(CH559)
++#if defined(CH551) || defined(CH552) || defined(CH549) || defined(CH559) || defined(CH558)
+   case P1PORT:
+     portBuf = P1;
+     break;
+@@ -281,7 +306,7 @@
+   case P5PORT:
+     portBuf = P5;
+     break;
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+   case P0PORT:
+     portBuf = P0;
+     break;
+@@ -318,7 +343,7 @@
+   EA = 0;
+ 
+   switch (port) {
+-#if defined(CH551) || defined(CH552) || defined(CH549) || defined(CH559)
++#if defined(CH551) || defined(CH552) || defined(CH549) || defined(CH559) || defined(CH558)
+   case P1PORT:
+     if (val == LOW) {
+       P1 &= ~bit;
+@@ -363,7 +388,7 @@
+       P5 |= bit;
+     }
+     break;
+-#elif defined(CH559)
++#elif defined(CH559) || defined(CH558)
+   case P0PORT:
+     if (val == LOW) {
+       P0 &= ~bit;
+Only in .: installed.json
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBCDC.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBCDC.c
+--- ./libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBCDC.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBCDC.c	2024-05-17 22:29:31
+@@ -88,7 +88,7 @@
+ 
+     while (1)
+       ;
+-#elif defined(CH559) && (BOOT_LOAD_ADDR == 0xF400)
++#elif (defined(CH559) || defined(CH558)) && (BOOT_LOAD_ADDR == 0xF400)
+     USB_CTRL = 0;
+     EA = 0; // Disabling all interrupts is required.
+     delayMicroseconds(50000);
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CDCinUserCode/src/userUsbCdc/USBhandler.c	2024-05-17 22:29:31
+@@ -506,7 +506,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -522,7 +522,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/CMSIS_DAP/src/CMSIS_DAPusb/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CMSIS_DAP/src/CMSIS_DAPusb/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/CMSIS_DAP/src/CMSIS_DAPusb/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CMSIS_DAP/src/CMSIS_DAPusb/USBhandler.c	2024-05-17 22:29:31
+@@ -479,7 +479,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBCDC.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBCDC.c
+--- ./libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBCDC.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBCDC.c	2024-05-17 22:29:31
+@@ -85,7 +85,7 @@
+ 
+     while (1)
+       ;
+-#elif defined(CH559) && (BOOT_LOAD_ADDR == 0xF400)
++#elif (defined(CH559) || defined(CH558))  && (BOOT_LOAD_ADDR == 0xF400)
+     USB_CTRL = 0;
+     EA = 0; // Disabling all interrupts is required.
+     delayMicroseconds(50000);
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/CdcHidCombo/src/CdcHidCombo/USBhandler.c	2024-05-17 22:29:31
+@@ -516,7 +516,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -532,8 +532,8 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
+-  // CH559 use differend endianness for these registers
++#if defined(CH559) || defined(CH558)
++  // CH558 use differend endianness for these registers -- see page 69, table 16.3.3
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+   UEP1_DMA_H = ((uint16_t)Ep1Buffer >> 8); // Endpoint 1 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/HidKeyboard/src/userUsbHidKeyboard/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidKeyboard/src/userUsbHidKeyboard/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/HidKeyboard/src/userUsbHidKeyboard/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidKeyboard/src/userUsbHidKeyboard/USBhandler.c	2024-05-17 22:29:31
+@@ -500,7 +500,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -516,7 +516,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/HidKeyboardMouse/src/userUsbHidKeyboardMouse/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidKeyboardMouse/src/userUsbHidKeyboardMouse/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/HidKeyboardMouse/src/userUsbHidKeyboardMouse/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidKeyboardMouse/src/userUsbHidKeyboardMouse/USBhandler.c	2024-05-17 22:29:31
+@@ -481,7 +481,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -497,7 +497,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/HidMediaKeyboard/src/userUsbHidMediaKeyboard/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidMediaKeyboard/src/userUsbHidMediaKeyboard/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/HidMediaKeyboard/src/userUsbHidMediaKeyboard/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/HidMediaKeyboard/src/userUsbHidMediaKeyboard/USBhandler.c	2024-05-17 22:29:31
+@@ -481,7 +481,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -497,8 +497,8 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
+-  // CH559 use differend endianness for these registers
++#if defined(CH559) || defined(CH558)
++  // CH558 use differend endianness for these registers -- see table 16.3.3 on page 69
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+   UEP1_DMA_H = ((uint16_t)Ep1Buffer >> 8); // Endpoint 1 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/MassStorage/src/userMassStorage/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/MassStorage/src/userMassStorage/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/MassStorage/src/userMassStorage/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/MassStorage/src/userMassStorage/USBhandler.c	2024-05-17 22:29:31
+@@ -487,7 +487,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -503,7 +503,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBAudioSpeaker.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBAudioSpeaker.c
+--- ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBAudioSpeaker.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBAudioSpeaker.c	2024-05-17 22:28:26
+@@ -151,5 +151,5 @@
+   soundBufferPlayBackIndex = 0;
+   TR2 = 1;
+ 
+-  UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_TOUT;
++  UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_TOUT;
+ }
+\ No newline at end of file
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBconstant.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBconstant.c
+--- ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBconstant.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBconstant.c	2024-05-17 22:28:26
+@@ -6,9 +6,9 @@
+     0x01, // DEVICE Descriptor Type
+     0x00,
+     0x02,               // USB Specification version 2.00
+-    0x00,               // Each interface specifies its own class information
+-    0x00,               // Each interface specifies its own Subclass information
+-    0x00,               // No protocols the device basis
++    0xEF,               // IAD class information
++    0x02,               // IAD Subclass information
++    0x01,               // IAD protocols
+     DEFAULT_ENDP0_SIZE, // Maximum packet size for endpoint zero is 8
+     0x09,
+     0x12, // Vendor ID
+@@ -38,6 +38,10 @@
+           // 6: Self-powered 1 Bit 5: Remote Wakeup 0
+     0x32, // Maximum power consumption of the device in this configuration is
+           // 100 mA
++
++    // Interface Association Descriptor, IAD
++    // This packes following 2 interfaces into 1
++    0x08, 0x0B, 0x00, 0x02, 0x01, 0x00, 0x00, 0x00,
+ 
+     0x09, // Descriptor size is 9 bytes
+     0x04, // INTERFACE Descriptor Type
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/SoundCard/src/USBAudioSpeaker/USBhandler.c	2024-05-17 22:29:31
+@@ -483,7 +483,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -509,7 +509,7 @@
+   // UEP_T_RES_NAK;                //Manual flip, OUT transaction returns ACK,
+   // IN transaction returns NAK
+ 
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/USBtinySPI_CH552/src/tinySpiDWire/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/USBtinySPI_CH552/src/tinySpiDWire/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/USBtinySPI_CH552/src/tinySpiDWire/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/USBtinySPI_CH552/src/tinySpiDWire/USBhandler.c	2024-05-17 22:29:31
+@@ -583,7 +583,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+diff -u -r ./libraries/Generic_Examples/examples/05.USB/qmkCompatibleKeyboard/src/userQmkCompatibleKeyboard/USBhandler.c ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/qmkCompatibleKeyboard/src/userQmkCompatibleKeyboard/USBhandler.c
+--- ./libraries/Generic_Examples/examples/05.USB/qmkCompatibleKeyboard/src/userQmkCompatibleKeyboard/USBhandler.c	2024-06-02 18:18:15
++++ ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/libraries/Generic_Examples/examples/05.USB/qmkCompatibleKeyboard/src/userQmkCompatibleKeyboard/USBhandler.c	2024-05-17 22:29:31
+@@ -490,7 +490,7 @@
+ #if defined(CH551) || defined(CH552) || defined(CH549)
+   UDEV_CTRL = bUD_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+-#if defined(CH559)
++#if defined(CH559)|| defined(CH558)
+   UDEV_CTRL = bUD_DP_PD_DIS; // Disable DP/DM pull-down resistor
+ #endif
+   UDEV_CTRL |= bUD_PORT_EN; // Enable physical port
+@@ -506,7 +506,7 @@
+ }
+ 
+ void USBDeviceEndPointCfg() {
+-#if defined(CH559)
++#if defined(CH559) || defined(CH558)
+   // CH559 use differend endianness for these registers
+   UEP0_DMA_H = ((uint16_t)Ep0Buffer >> 8); // Endpoint 0 data transfer address
+   UEP0_DMA_L = ((uint16_t)Ep0Buffer >> 0); // Endpoint 0 data transfer address
+Only in ../../../../../packages-off/CH55xDuino/hardware/mcs51/0.0.21/variants: ch558
