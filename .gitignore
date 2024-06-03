@@ -52,3 +52,8 @@ Mkfile.old
 dkms.conf
 
 .svnignore
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
