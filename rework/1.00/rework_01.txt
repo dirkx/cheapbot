@@ -1,0 +1,12 @@
+01
+
+The BOOT circuit is wiring wrong; it was pulling to ground rather
+than 3V3. Remove R10; wire the 3v3 side of R10 (nearest to board edge)
+to pin 3/4 (left) of the BOOT switch; and then cut the wire to ground
+at the back of the board (see photo).
+
+Alternatively; do not solder the boot/P0.6 solder jumper in; but
+rather than press the boot button; shortcircuit over R10 in the few/rare
+cases you need to use this pin for BOOT.
+
+Use with P0.6 is unaffected.

@@ -1,0 +1,20 @@
+00
+
+The USB connectors should have been sunk into the board; however the
+area under the was not milled out. As a result they stand proud at a
+45 degree angle.
+
+Solution 1:
+	With a solderblob suppor the front wings - to make things sturdier.
+	And dab the rear ones with a good bit extra too.
+
+	This has shown to be quite adequate.
+
+Solution 2:
+	Fasion a U shaped bit of wire to go help make above sturdier.
+
+Solution 3:
+	Desolder the plug and solder a 'normal' rather than sunk
+	plug across. MicroUSB ones tend to have 4 tabs in the right
+	place; and fit once you cut the pins off at the back with
+	an exacto knife.
